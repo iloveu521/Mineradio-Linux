@@ -32,6 +32,14 @@ const MIN_WINDOWED_HEIGHT = 540;
 const APP_NAME = 'Mineradio';
 const APP_USER_MODEL_ID = 'com.mineradio.desktop';
 const APP_ICON_ICO = path.join(__dirname, '..', 'build', 'icon.ico');
+const APP_ICON_PNG = path.join(__dirname, '..', 'build', 'icon.png');
+
+function getAppIcon() {
+  if (process.platform === 'win32') {
+    return fs.existsSync(APP_ICON_ICO) ? APP_ICON_ICO : APP_ICON_PNG;
+  }
+  return APP_ICON_PNG;
+}
 const NETEASE_LOGIN_PARTITION = 'persist:mineradio-netease-login';
 const NETEASE_LOGIN_URL = 'https://music.163.com/#/login';
 const QQ_LOGIN_PARTITION = 'persist:mineradio-qqmusic-login';
@@ -420,7 +428,7 @@ async function openNeteaseMusicLoginWindow(owner) {
       autoHideMenuBar: true,
       title: '网易云音乐登录',
       backgroundColor: '#111111',
-      icon: APP_ICON_ICO,
+      icon: getAppIcon(),
       webPreferences: {
         partition: NETEASE_LOGIN_PARTITION,
         contextIsolation: true,
@@ -522,7 +530,7 @@ async function openQQMusicLoginWindow(owner) {
       autoHideMenuBar: true,
       title: 'QQ 音乐登录',
       backgroundColor: '#111111',
-      icon: APP_ICON_ICO,
+      icon: getAppIcon(),
       webPreferences: {
         partition: QQ_LOGIN_PARTITION,
         contextIsolation: true,
