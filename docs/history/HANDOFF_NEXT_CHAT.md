@@ -28,7 +28,7 @@ Get-Content RELEASE.md
 - 当前版本：`v1.1.0`
 - 当前发布策略：纯净安装版，从当前可信源码重新构建；`v1.0.10` 及更早旧安装包需要隔离，不再建议安装或传播。
 - 本次发布不做 `v1.0.10 -> v1.1.0` 软件内本地更新，不上传 `latest.yml`，不生成快速补丁。
-- 安装包样式继续沿用 `docs/INSTALLER_STYLE.md` 的中文极简黑白蓝格式。
+- 安装包样式继续沿用 `docs/design/INSTALLER_STYLE.md` 的中文极简黑白蓝格式。
 - GitHub 仓库已公开：`https://github.com/XxHuberrr/Mineradio`
 - `v1.1.0` Release：`https://github.com/XxHuberrr/Mineradio/releases/tag/v1.1.0`
 - GitHub `/releases/latest` 仍返回 `v1.0.10`，这是刻意设置，避免旧版软件内更新到 1.1.0。
@@ -38,7 +38,7 @@ Get-Content RELEASE.md
 - 已将 `E:\Download\默认测试.json` 设为首次启动默认用户存档和软件内默认视觉参数。
 - 新增 `public/default-user-fx-archive.json`，代码中 `PACKAGED_DEFAULT_FX_SNAPSHOT` 与该 JSON 已脚本比对一致。
 - 没有本地 `mineradio-lyric-layout-v1` 时，`readSavedLyricLayout()` 使用 packaged 默认快照；没有本地用户存档 key 时自动创建「默认测试」槽位。
-- 已恢复详细日志和发布说明：`CHANGELOG.md`、`README.md`、`SECURITY.md`、`RELEASE.md`、`docs/SECURITY_REBUILD_2026-06-24.md`、`docs/RELEASE_NOTES_v1.1.0.md`。
+- 已恢复详细日志和发布说明：`CHANGELOG.md`、`README.md`、`SECURITY.md`、`RELEASE.md`、`docs/security/SECURITY_REBUILD_2026-06-24.md`、`docs/release/RELEASE_NOTES_v1.1.0.md`。
 - 已生成安装包：`dist/Mineradio-1.1.0-Setup.exe`。
 - 已生成校验文件：`dist/Mineradio-1.1.0-SHA256SUMS.txt`。
 - 已发布资产：安装包、blockmap、SHA256SUMS；未上传 `latest.yml`。
@@ -72,7 +72,7 @@ $env:ALL_PROXY='socks5://127.0.0.1:10808'
   - `dist/Mineradio-1.1.0-Setup.exe`
   - `dist/Mineradio-1.1.0-Setup.exe.blockmap`
   - `dist/Mineradio-1.1.0-SHA256SUMS.txt`
-- Release 正文使用 `docs/RELEASE_NOTES_v1.1.0.md`。
+- Release 正文使用 `docs/release/RELEASE_NOTES_v1.1.0.md`。
 - Release 需要 `--latest=false` 或等价 API，避免旧版客户端通过 `/releases/latest` 自动发现。
 - 旧 release 尤其 `v1.0.10` 需要追加隔离警示，不要删除旧资产。
 

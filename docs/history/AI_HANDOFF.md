@@ -11,7 +11,7 @@
 - GitHub `/releases/latest` 仍返回 `v1.0.10`，这是刻意设置，避免旧版软件内更新到 1.1.0。
 - `v1.0.10` 及更早旧安装包不再信任，需要在 GitHub Release/README/SECURITY 中标记隔离。
 - `v1.1.0` 不提供从 `v1.0.10` 的软件内本地更新，不上传 `latest.yml`，不生成 `v1.0.10 -> v1.1.0` 快速补丁。
-- 新对话优先读 `AGENTS.md`、`docs/PROJECT_MEMORY.md`、`docs/HANDOFF_NEXT_CHAT.md`；涉及安全重建或发布时再读 `docs/SECURITY_REBUILD_2026-06-24.md`。本文件下面包含较早历史记录，不能覆盖上述文件的当前结论。
+- 新对话优先读 `AGENTS.md`、`docs/architecture/ARCHITECTURE.md`、`docs/history/PROJECT_MEMORY.md`、`docs/history/HANDOFF_NEXT_CHAT.md`；涉及安全重建或发布时再读 `docs/security/SECURITY_REBUILD_2026-06-24.md`。本文件下面包含较早历史记录，不能覆盖上述文件的当前结论。
 
 ## 用户偏好
 
@@ -75,18 +75,29 @@
 
 ## 已完成工作日志
 
+### 2026-07-01 — 记录者：Silly ([iloveu521](https://github.com/iloveu521))
+
+- 将 `docs/` 从扁平结构重组为分类子目录：`architecture/` `design/` `roadmap/` `release/` `history/` `security/`。
+- 11 个文件通过 `git mv` 移入对应子目录，零删除，保留 Git 历史。
+- 新建 `docs/README.md`（文档索引导航）和 `docs/roadmap/ROADMAP.md`（路线图，从项目记忆中提取汇总）。
+- 新建 `docs/architecture/ARCHITECTURE.md`（完整系统架构文档，含 53 个 API 端点、20+ 前端模块、数据流、技术栈）。
+- `AI_HANDOFF.md` 从根目录移入 `docs/history/`。
+- 更新 40+ 处跨文档路径引用（`AGENTS.md`、`RELEASE.md`、所有 `history/` 文件）。
+- `AGENTS.md` 新增完整的按需读取指引和 `docs/` 子目录说明。
+- 本记录同步写入 `docs/history/PROJECT_MEMORY.md`。
+
 ### 2026-06-24
 
 - 将 `E:\Download\默认测试.json` 接入为首次启动默认用户存档和默认视觉参数；新增 `public/default-user-fx-archive.json`，并让没有本地用户存档的新用户自动得到「默认测试」槽位。
-- 更新 `CHANGELOG.md`、`README.md`、`SECURITY.md`、`RELEASE.md`、`docs/SECURITY_REBUILD_2026-06-24.md` 和 `docs/RELEASE_NOTES_v1.1.0.md`，恢复详细日志并写明 `v1.0.10` 旧安装包隔离、`v1.1.0` 纯净安装、不走软件内更新。
+- 更新 `CHANGELOG.md`、`README.md`、`SECURITY.md`、`RELEASE.md`、`docs/security/SECURITY_REBUILD_2026-06-24.md` 和 `docs/release/RELEASE_NOTES_v1.1.0.md`，恢复详细日志并写明 `v1.0.10` 旧安装包隔离、`v1.1.0` 纯净安装、不走软件内更新。
 - 已执行 `npm run build:win`，第一次被旧代理 `127.0.0.1:26001` 拦截，切到 `127.0.0.1:10808` 后打包成功。产物：`dist/Mineradio-1.1.0-Setup.exe`、`.blockmap`、`Mineradio-1.1.0-SHA256SUMS.txt`。
 - 已运行 `git diff --check`、`node --check server.js`、前端 5 个内联脚本解析、默认 JSON 解析、Git 跟踪高风险残留检查；Defender 对新安装包和 `win-unpacked` 扫描后 `Get-MpThreatDetection` 查询为空。
 - 已发布 GitHub Release `v1.1.0`，上传安装包、blockmap、SHA256SUMS；未上传 `latest.yml`。已批量给旧 Release（`v1.0.10` 到 `v0.9.9`）追加旧安装包隔离警示。
-- 检查并更新新对话交接：`docs/HANDOFF_NEXT_CHAT.md` 已改为当前 `v1.1.0` 源码安全重建状态。
-- 本轮交接检查开始时工作树为干净：`main...origin/main`；随后仅修改 `AI_HANDOFF.md`、`docs/HANDOFF_NEXT_CHAT.md`、`docs/PROJECT_MEMORY.md`，并新增 `docs/3D_PLAYLIST_SHELF_MEMORY.md`。
-- 已补全 3D 歌单架专项记忆：控制台模式、常驻/静态镜头、详情页层级、歌词避让、右键歌单架抑制底部控制台、不要推倒重做手感等边界写入 `docs/3D_PLAYLIST_SHELF_MEMORY.md`。
-- 项目记忆 `docs/PROJECT_MEMORY.md` 已包含 `2026-06-24 - 1.1.0 安全重建源码优先`，记录不要复用旧感染环境产出的安装包、旧 `dist`、旧 `node_modules` 或临时扫描资料。
-- 安全重建日志在 `docs/SECURITY_REBUILD_2026-06-24.md`，后续安装包发布必须从当前 Git-tracked 源码重新构建并扫描。
+- 检查并更新新对话交接：`docs/history/HANDOFF_NEXT_CHAT.md` 已改为当前 `v1.1.0` 源码安全重建状态。
+- 本轮交接检查开始时工作树为干净：`main...origin/main`；随后仅修改 `docs/history/AI_HANDOFF.md`、`docs/history/HANDOFF_NEXT_CHAT.md`、`docs/history/PROJECT_MEMORY.md`，并新增 `docs/design/3D_PLAYLIST_SHELF_MEMORY.md`。
+- 已补全 3D 歌单架专项记忆：控制台模式、常驻/静态镜头、详情页层级、歌词避让、右键歌单架抑制底部控制台、不要推倒重做手感等边界写入 `docs/design/3D_PLAYLIST_SHELF_MEMORY.md`。
+- 项目记忆 `docs/history/PROJECT_MEMORY.md` 已包含 `2026-06-24 - 1.1.0 安全重建源码优先`，记录不要复用旧感染环境产出的安装包、旧 `dist`、旧 `node_modules` 或临时扫描资料。
+- 安全重建日志在 `docs/security/SECURITY_REBUILD_2026-06-24.md`，后续安装包发布必须从当前 Git-tracked 源码重新构建并扫描。
 
 ### 2026-06-18
 
