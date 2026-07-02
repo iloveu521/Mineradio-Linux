@@ -1,5 +1,25 @@
 # Mineradio Project Memory
 
+### 2026-07-02 — Release v1.2.1 + 独立仓库 + 短期优化计划
+
+- **记录者**：Silly
+- **GitHub**：[iloveu521](https://github.com/iloveu521)
+- **Release v1.2.1**：
+  - 已发布到 GitHub Releases：AppImage (135MB) + deb (105MB)
+  - Release 地址：https://github.com/iloveu521/Mineradio-Linux/releases/tag/v1.2.1
+- **独立仓库**：
+  - 仓库脱离 fork → 独立仓库（便于 GitHub 搜索）
+  - 已添加上游 remote：`git@github.com:XxHuberrr/Mineradio.git`
+  - 同步命令：`git fetch upstream && git merge upstream/main`
+- **短期优化计划**（写入 `docs/roadmap/ROADMAP.md`）：
+  1. UI Linux 桌面环境兼容优化（X11/Wayland 检测、卡顿排查）
+  2. 左侧歌单交互优化（出现卡顿、消失延迟）
+  3. 桌面歌词显示逻辑优化（窗口可见时关闭、最小化时显示）
+  4. 音量按钮滚轮调节
+  5. 进度条拖动响应优化
+  6. 播放器控制台桌面歌词开关按钮
+- **禁止回退**：不要回退到 fork 模式；不要将上游 remote 指向错误仓库
+
 ### 2026-07-02 — Linux 平台迁移完成
 
 - **记录者**：Silly

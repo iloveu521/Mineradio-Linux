@@ -2,16 +2,15 @@
 
 这个文件是给后续接管本工作区的 AI 看的。每次完成一个任务后，都要更新本文件的「工作日志」和「未完成事项」，让下一位接手者能快速知道用户偏好、当前状态和最近做过什么。
 
-## 当前权威入口（2026-06-24）
+## 当前权威入口（2026-07-02）
 
-- 当前真实代码/Git 仓库仍是 `E:\桌面\播放器软件\Mineradio\resources\app`。
-- 当前版本是 `v1.1.0` 纯净安装发布线；本轮已从当前可信源码重新生成并发布 `dist/Mineradio-1.1.0-Setup.exe`。
-- GitHub 仓库已公开：`https://github.com/XxHuberrr/Mineradio`
-- `v1.1.0` Release：`https://github.com/XxHuberrr/Mineradio/releases/tag/v1.1.0`
-- GitHub `/releases/latest` 仍返回 `v1.0.10`，这是刻意设置，避免旧版软件内更新到 1.1.0。
-- `v1.0.10` 及更早旧安装包不再信任，需要在 GitHub Release/README/SECURITY 中标记隔离。
-- `v1.1.0` 不提供从 `v1.0.10` 的软件内本地更新，不上传 `latest.yml`，不生成 `v1.0.10 -> v1.1.0` 快速补丁。
-- 新对话优先读 `AGENTS.md`、`docs/architecture/ARCHITECTURE.md`、`docs/history/PROJECT_MEMORY.md`、`docs/history/HANDOFF_NEXT_CHAT.md`；涉及安全重建或发布时再读 `docs/security/SECURITY_REBUILD_2026-06-24.md`。本文件下面包含较早历史记录，不能覆盖上述文件的当前结论。
+- 当前项目：Mineradio-Linux，独立仓库（非 fork）
+- GitHub 仓库：`https://github.com/iloveu521/Mineradio-Linux`
+- 上游仓库：`git@github.com:XxHuberrr/Mineradio.git`（已添加为 upstream remote）
+- 当前版本：`v1.2.1` — Linux 平台迁移完成，已发布 AppImage + deb
+- Release 地址：`https://github.com/iloveu521/Mineradio-Linux/releases/tag/v1.2.1`
+- 新对话优先读 `AGENTS.md`、`docs/architecture/ARCHITECTURE.md`、`docs/roadmap/ROADMAP.md`、`docs/history/PROJECT_MEMORY.md`；开发前读 `docs/design/LINUX_DESIGN.md`。
+- 下一步：短期优化计划（v1.3.0），详见 `docs/roadmap/ROADMAP.md`
 
 ## 用户偏好
 
@@ -74,6 +73,14 @@
 这个目录是人工归档区，不参与软件更新流程。
 
 ## 已完成工作日志
+
+### 2026-07-02 — 记录者：Silly ([iloveu521](https://github.com/iloveu521))
+
+- Linux 迁移完成（v0.2.0 → v1.2.1），共 7 个阶段。
+- 发布 v1.2.1 Release：AppImage (135MB) + deb (105MB)。
+- 仓库脱离 fork → 独立仓库，已添加上游 remote。
+- 删除 CONTACT_AUTHOR.md（联系作者的信已发送）。
+- 制定短期优化计划 v1.3.0（6 个优化项），写入 `docs/roadmap/ROADMAP.md`。
 
 ### 2026-07-01 — 记录者：Silly ([iloveu521](https://github.com/iloveu521))
 

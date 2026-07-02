@@ -119,6 +119,38 @@ Phase1
 
 ---
 
+## 短期优化计划 🚧 v1.3.0
+
+> 目标: 修复 Linux 桌面环境下的体验问题，优化交互细节
+
+- [ ] **Item 1** — UI Linux 桌面环境兼容优化
+  - X11/Wayland 环境检测（`XDG_SESSION_TYPE`）
+  - Wayland 下给出兼容性提示
+  - 排查 `requestAnimationFrame` 与 X11 compositor vsync 的卡顿原因
+  - 文件：`desktop/main.js`
+- [ ] **Item 2** — 左侧歌单交互优化
+  - 歌单出现时卡顿排查
+  - 鼠标移走后延迟消失问题（缩短 hide timeout）
+  - 文件：`public/index.html`
+- [ ] **Item 3** — 桌面歌词显示逻辑优化
+  - 窗口可见 → 自动关闭桌面歌词
+  - 窗口最小化/关闭 → 自动显示桌面歌词
+  - 其余时刻显示在最上层
+  - 文件：`desktop/main.js`
+- [ ] **Item 4** — 音量按钮滚轮调节
+  - 鼠标悬停音量按钮时，滚轮上下调节音量
+  - 文件：`public/index.html`
+- [ ] **Item 5** — 进度条拖动响应优化
+  - 拖动进度条时响应慢、不跟手
+  - 减少 seek debounce 或检查事件处理链路
+  - 文件：`public/index.html`
+- [ ] **Item 6** — 播放器控制台桌面歌词按钮
+  - 在 `#bottom-bar` 控制区添加桌面歌词开关按钮
+  - 按钮状态反映桌面歌词开/关
+  - 文件：`public/index.html`
+
+---
+
 ## 已完成
 
 - [x] v1.1.1 — P0 安装器/卸载器安全规则完善（`build/installer.nsh`）
