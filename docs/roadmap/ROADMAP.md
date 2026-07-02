@@ -102,18 +102,18 @@ Phase1
 - [ ] Home 页面与后方 3D 歌单架的交互穿透问题
 - [ ] 详情页打开后的位置/层级精确控制
 
-### Linux 平台适配 🚧 进行中
+### Linux 平台适配 ✅ 已完成
 
-> 详细设计文档: [`docs/design/DESIGN.md`](../design/DESIGN.md)
-> 目标版本: `v1.2.0`
+> 详细设计文档: [`docs/design/LINUX_DESIGN.md`](../design/LINUX_DESIGN.md)
+> 完成版本: `v1.2.0`
 
 - [x] Phase 0 — 文档与准备 → `v0.1.0`
 - [x] Phase 1 — GPU 渲染修复 (use-angle d3d11) → `v0.2.0`
-- [ ] Phase 2 — 节拍缓存路径修复 (XDG) → `v0.3.0`
-- [ ] Phase 3 — 窗口图标修复 (ICO→PNG) → `v0.4.0`
-- [ ] Phase 4 — 构建系统配置 (AppImage + deb) → `v0.5.0`
-- [ ] Phase 5 — 集成测试 (X11) → `v0.6.0`
-- [ ] Phase 6 — 文档收尾 → `v1.2.0`
+- [x] Phase 2 — 节拍缓存路径修复 (XDG) → `v0.3.0`
+- [x] Phase 3 — 窗口图标修复 (ICO→PNG) → `v0.4.0`
+- [x] Phase 4 — 构建系统配置 (AppImage + deb) → `v0.5.0`
+- [x] Phase 5 — 集成测试 (X11) → `v0.6.0`
+- [x] Phase 6 — 文档收尾 → `v1.2.0`
 
 已知限制: Wayland 不完全兼容、桌面歌词中键锁定不可用、壁纸模式无 WorkerW 等价物、无自动更新。
 
