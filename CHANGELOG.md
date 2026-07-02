@@ -1,5 +1,20 @@
 # Changelog
 
+## v0.2.0
+
+- Linux 迁移 Phase 1：GPU 渲染后端修复
+- 将 `use-angle d3d11` 从固定 Chromium 启动参数中移除，改为仅在 Windows 平台添加
+- Linux 上使用默认 GL/Vulkan 后端，避免 D3D11 不存在导致 Electron 启动崩溃
+
+## v0.1.0
+
+- 文档目录结构重组：docs/ 按 architecture/design/roadmap/release/history/security 分类
+- 新增 docs/README.md（文档索引导航）
+- 新增 docs/architecture/ARCHITECTURE.md（完整系统架构文档）
+- 新增 docs/design/DESIGN.md（Linux 迁移设计文档）
+- 新增 docs/roadmap/ROADMAP.md（项目路线图）
+- 项目记录归档，记录者 Silly (iloveu521)
+
 ## v1.1.1
 
 - P0 installer safety fix: installation now defaults to the first available non-C drive from `D:\Mineradio` through `Z:\Mineradio`; it falls back to `C:\Mineradio` only when no D-Z drive exists.

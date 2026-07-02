@@ -48,8 +48,11 @@ const CHROMIUM_PERFORMANCE_SWITCHES = [
   ['disable-renderer-backgrounding'],
   ['disable-backgrounding-occluded-windows'],
   ['force_high_performance_gpu'],
-  ['use-angle', 'd3d11'],
 ];
+// ANGLE D3D11 is Windows-only; Linux uses the default GL/Vulkan backend
+if (process.platform === 'win32') {
+  CHROMIUM_PERFORMANCE_SWITCHES.push(['use-angle', 'd3d11']);
+}
 for (const [name, value] of CHROMIUM_PERFORMANCE_SWITCHES) {
   if (value == null) app.commandLine.appendSwitch(name);
   else app.commandLine.appendSwitch(name, value);

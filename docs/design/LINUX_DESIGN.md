@@ -1,10 +1,10 @@
 # Mineradio Linux Migration Design
 
-> 版本: v0.1.0-draft | 日期: 2026-07-02 | 状态: 待审查
+> 版本: v0.1.0-draft | 日期: 2026-07-02 | 状态: 已审查
 
 ---
 
-## 1. 目标
+## 1. Goal
 
 将 Mineradio 从 **Windows-only Electron 桌面音乐播放器** 完整迁移到 **Linux 平台**。
 
@@ -23,7 +23,7 @@
 | `desktop/main.js` | ~15 行 | Phase 1 + 3 |
 | `server.js` | ~35 行 | Phase 2 |
 | `package.json` | ~20 行 | Phase 4 |
-| `docs/design/DESIGN.md` | 新建 | Phase 0 |
+| `docs/design/LINUX_DESIGN.md` | 新建 | Phase 0 |
 | `docs/roadmap/ROADMAP.md` | ~5 行 | Phase 0 |
 | `CHANGELOG.md` | ~10 行 | Phase 6 |
 | `README.md` | ~5 行 | Phase 6 |
@@ -46,7 +46,7 @@
 
 **依赖**: 无
 
-- [ ] 写入本文件 `docs/design/DESIGN.md`
+- [ ] 写入本文件 `docs/design/LINUX_DESIGN.md`
 - [ ] 更新 `docs/roadmap/ROADMAP.md` Linux 条目状态为"进行中"
 
 **验证**:

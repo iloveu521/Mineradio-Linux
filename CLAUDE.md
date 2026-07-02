@@ -211,6 +211,33 @@ Documentation is considered part of the task.
 
 ---
 
+## Documentation Language
+
+Documentation should follow the following language convention:
+
+- Level-1 and Level-2 headings should be written in English.
+- Technical terms, file names, class names, function names, APIs, and code snippets should remain in English.
+- Explanations, design rationale, implementation details, and notes should be written in Simplified Chinese.
+- Keep the writing concise and avoid unnecessary repetition.
+
+Example:
+
+# Linux Platform Migration
+
+## Goal
+
+实现 Linux 平台兼容。
+
+## Implementation
+
+修改 `desktop/main.js`，按平台选择 GPU 后端。
+
+## Verification
+
+运行 `npm start`，确认应用正常启动。
+
+---
+
 # Project Structure
 
 Respect the existing directory structure.

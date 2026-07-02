@@ -3,6 +3,25 @@
 > 最后更新: 2026-07-01 | 当前版本: v1.1.1
 
 ---
+# Current Sprint
+
+Current Sprint
+
+v0.1.0-draft
+
+Current Phase
+
+Phase0 Documentation and enviromnet prep
+
+Status
+
+In Progress
+
+Next
+
+Phase1
+
+---
 
 ## 近期计划 (P0-P1)
 
@@ -88,8 +107,8 @@
 > 详细设计文档: [`docs/design/DESIGN.md`](../design/DESIGN.md)
 > 目标版本: `v1.2.0`
 
-- [ ] Phase 0 — 文档与准备 → `v0.1.0`
-- [ ] Phase 1 — GPU 渲染修复 (use-angle d3d11) → `v0.2.0`
+- [x] Phase 0 — 文档与准备 → `v0.1.0`
+- [x] Phase 1 — GPU 渲染修复 (use-angle d3d11) → `v0.2.0`
 - [ ] Phase 2 — 节拍缓存路径修复 (XDG) → `v0.3.0`
 - [ ] Phase 3 — 窗口图标修复 (ICO→PNG) → `v0.4.0`
 - [ ] Phase 4 — 构建系统配置 (AppImage + deb) → `v0.5.0`
