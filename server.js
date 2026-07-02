@@ -47,6 +47,7 @@ const {
 const http = require('http');
 const https = require('https');
 const fs   = require('fs');
+const os   = require('os');
 const path = require('path');
 const crypto = require('crypto');
 const tls = require('tls');
@@ -62,7 +63,12 @@ const QQ_COOKIE_FILE = process.env.QQ_COOKIE_FILE || path.join(__dirname, '.qq-c
 const UPDATE_WORK_DIR = process.env.MINERADIO_UPDATE_DIR || path.join(__dirname, 'updates');
 const UPDATE_DOWNLOAD_DIR = process.env.MINERADIO_UPDATE_DOWNLOAD_DIR || path.join(UPDATE_WORK_DIR, 'downloads');
 const UPDATE_PATCH_BACKUP_DIR = process.env.MINERADIO_PATCH_BACKUP_DIR || path.join(UPDATE_WORK_DIR, 'backups', 'patches');
-const BEATMAP_CACHE_DIR = process.env.MINERADIO_BEAT_CACHE_DIR || 'D:\\MineradioCache\\beatmaps';
+function defaultBeatCacheDir() {
+  if (process.platform === 'win32') return 'D:\\MineradioCache\\beatmaps';
+  const xdgCache = process.env.XDG_CACHE_HOME || path.join(os.homedir(), '.cache');
+  return path.join(xdgCache, 'mineradio', 'beatmaps');
+}
+const BEATMAP_CACHE_DIR = process.env.MINERADIO_BEAT_CACHE_DIR || defaultBeatCacheDir();
 const APP_PACKAGE = readPackageInfo();
 const APP_VERSION = process.env.MINERADIO_VERSION || APP_PACKAGE.version || '0.9.11';
 const UPDATE_CONFIG = readUpdateConfig(APP_PACKAGE);
@@ -506,11 +512,26 @@ async function fetchManifestUpdateInfo(ref) {
 }
 function beatCacheRootInfo() {
   const dir = path.resolve(BEATMAP_CACHE_DIR);
-  const root = path.parse(dir).root;
-  const drive = root ? root.replace(/[\\\/]+$/, '').toUpperCase() : '';
-  const allowed = !!root && !/^C:$/i.test(drive);
-  const available = allowed && fs.existsSync(root);
-  return { dir, root, drive, allowed, available };
+  if (process.platform === 'win32') {
+    const root = path.parse(dir).root;
+    const drive = root ? root.replace(/[\\\/]+$/, '').toUpperCase() : '';
+    const allowed = !!root && !/^C:$/i.test(drive);
+    const available = allowed && fs.existsSync(root);
+    return { dir, root, drive, allowed, available };
+  }
+  // Linux: no drive letters; check parent directory writability
+  const parentDir = path.dirname(dir);
+  let available = false;
+  try {
+    if (!fs.existsSync(parentDir)) {
+      fs.mkdirSync(parentDir, { recursive: true });
+    }
+    fs.accessSync(parentDir, fs.constants.W_OK);
+    available = true;
+  } catch (_) {
+    available = false;
+  }
+  return { dir, root: '/', drive: 'unix', allowed: true, available };
 }
 function ensureBeatMapCacheDir() {
   const info = beatCacheRootInfo();
@@ -3321,7 +3342,7 @@ const server = http.createServer(async (req, res) => {
       enabled: info.allowed && info.available,
       dir: info.dir,
       drive: info.drive,
-      reason: !info.allowed ? 'C_DRIVE_DISABLED' : (!info.available ? 'TARGET_DRIVE_UNAVAILABLE' : ''),
+      reason: !info.allowed ? 'C_DRIVE_DISABLED' : (!info.available ? (process.platform === 'win32' ? 'TARGET_DRIVE_UNAVAILABLE' : 'CACHE_DIR_UNAVAILABLE') : ''),
       mode: info.allowed && info.available ? 'disk' : 'memory-only',
     });
     return;
