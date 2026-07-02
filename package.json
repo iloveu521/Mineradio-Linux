@@ -1,33 +1,27 @@
 {
-  "name": "mineradio",
+  "name": "mineradio-linux",
   "productName": "Mineradio",
-  "version": "1.1.1",
-  "description": "沉浸式音乐播放器，融合天气电台、歌词舞台、粒子视觉和 3D 歌单架。",
-  "author": "Mineradio",
+  "version": "1.2.0",
+  "description": "A Linux desktop music player with weather radio, lyric stage, particle visuals, and 3D playlist shelf.",
+  "author": "Silly <iloveu521@users.noreply.github.com>",
   "main": "desktop/main.js",
   "private": true,
   "scripts": {
     "start": "electron .",
-    "build:win": "electron-builder --win nsis",
-    "build:win:dir": "electron-builder --win dir",
-    "build:linux": "electron-builder --linux appimage deb",
-    "build:linux:dir": "electron-builder --linux dir"
+    "build": "electron-builder --linux appimage deb",
+    "build:dir": "electron-builder --linux dir"
   },
   "build": {
-    "appId": "com.mineradio.desktop",
+    "appId": "com.mineradio.linux",
     "productName": "Mineradio",
     "directories": {
       "output": "dist",
       "buildResources": "build"
     },
-    "afterPack": "build/after-pack.js",
-    "toolsets": {
-      "winCodeSign": "1.1.0"
-    },
     "files": [
       "desktop/**/*",
       "public/**/*",
-      "build/**/*",
+      "build/icon.png",
       "server.js",
       "dj-analyzer.js",
       "package.json",
@@ -35,19 +29,6 @@
       "public/index.html"
     ],
     "asar": false,
-    "win": {
-      "executableName": "Mineradio",
-      "icon": "build/icon.ico",
-      "signAndEditExecutable": false,
-      "target": [
-        {
-          "target": "nsis",
-          "arch": [
-            "x64"
-          ]
-        }
-      ]
-    },
     "linux": {
       "executableName": "mineradio",
       "icon": "build/icon.png",
@@ -67,42 +48,13 @@
         }
       ]
     },
-    "nsis": {
-      "oneClick": false,
-      "perMachine": false,
-      "allowToChangeInstallationDirectory": false,
-      "createDesktopShortcut": true,
-      "createStartMenuShortcut": true,
-      "shortcutName": "Mineradio",
-      "installerIcon": "build/icon.ico",
-      "uninstallerIcon": "build/icon.ico",
-      "installerSidebar": "build/installerSidebar.bmp",
-      "uninstallerSidebar": "build/installerSidebar.bmp",
-      "installerHeader": "build/installerHeader.bmp",
-      "include": "build/installer.nsh",
-      "artifactName": "Mineradio-${version}-Setup.${ext}"
-    },
     "publish": [
       {
         "provider": "github",
-        "owner": "XxHuberrr",
-        "repo": "Mineradio"
+        "owner": "iloveu521",
+        "repo": "Mineradio-Linux"
       }
     ]
-  },
-  "mineradio": {
-    "update": {
-      "provider": "github",
-      "owner": "XxHuberrr",
-      "repo": "Mineradio",
-      "preview": true,
-      "preferMirrors": true,
-      "mirrors": [
-        "https://gh.llkk.cc/",
-        "https://ghfast.top/",
-        "https://gh-proxy.com/"
-      ]
-    }
   },
   "dependencies": {
     "gsap": "^3.15.0",
@@ -111,7 +63,6 @@
   },
   "devDependencies": {
     "electron": "^42.4.1",
-    "electron-builder": "^26.15.3",
-    "rcedit": "^5.0.2"
+    "electron-builder": "^26.15.3"
   }
 }
