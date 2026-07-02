@@ -10,7 +10,7 @@ The goal is to complete a modern, maintainable, and high-quality Linux desktop m
 
 # Before Starting Any Work
 
-Before beginning any development task, Claude **MUST** read the documentation inside the `docs/` directory and AGENTS.md.
+Before beginning any development task, Claude **MUST** read the documentation inside the `docs/README.md`.
 
 The following documents should always be reviewed first:
 
@@ -422,6 +422,10 @@ If the feature changes project behavior, architecture, or progress, update the r
 - ROADMAP.md
 - DESIGN.md
 - README.md
+
+If release a new version update the release documets.
+
+**MUST**update current sprint in ROADMAP.md everytime complete development. 
 
 Documentation updates are considered part of the implementation, not an optional step.
 
