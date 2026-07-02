@@ -1,6 +1,6 @@
 # Mineradio Linux Migration Design
 
-> 版本: v0.1.0-draft | 日期: 2026-07-02 | 状态: 已审查
+> 版本: v1.2.1 | 日期: 2026-07-02 | 状态: 已完成
 
 ---
 

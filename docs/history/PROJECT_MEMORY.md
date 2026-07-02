@@ -1,5 +1,24 @@
 # Mineradio Project Memory
 
+### 2026-07-02 — Linux 平台迁移完成
+
+- **记录者**：Silly
+- **GitHub**：[iloveu521](https://github.com/iloveu521)
+- **完成内容**：Mineradio 从 Windows 迁移到 Linux，共 7 个阶段 (v0.1.0 → v1.2.1)
+- **代码变更**：
+  - `desktop/main.js` — GPU D3D11 条件化 + PNG 图标适配
+  - `server.js` — 节拍缓存 XDG 路径 + beatCacheRootInfo 重写
+  - `package.json` — Linux 专用配置，AppImage + deb 构建
+- **文档新建**：
+  - `docs/architecture/ARCHITECTURE.md` — 完整系统架构
+  - `docs/design/LINUX_DESIGN.md` — Linux 迁移设计文档
+  - `docs/roadmap/ROADMAP.md` — 项目路线图
+  - `docs/README.md` — 文档索引导航
+  - `README_EN.md` — 英文版项目说明
+- **构建验证**：AppImage 135MB + deb 105MB，X11 GUI 启动截图确认
+- **已知限制**：Wayland 不完全兼容、桌面歌词中键锁定不可用、壁纸无 WorkerW、无自动更新
+- **禁止回退**：不要恢复 Windows 专用配置覆盖 Linux 适配；不要改回硬编码 D:\ 路径
+
 ### 2026-06-25 - P0 Installer In-Place Repair Rule
 
 - User requirement: all users must receive the installer/uninstaller safety fix with zero risk to unrelated files.

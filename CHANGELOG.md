@@ -1,5 +1,13 @@
 # Changelog
 
+## v1.2.1
+
+- 简化为 Linux 专用配置：移除 Windows 构建目标 (win/nsis/rcedit/toolsets)
+- 脚本重命名：`build:linux` → `build`，`build:linux:dir` → `build:dir`
+- 重写 README.md + 新增 README_EN.md，包含安装/构建/限制说明
+- 构建验证：AppImage (135MB) + deb (105MB) 构建成功，GUI 在 X11 上正常启动
+- 记录者：Silly (iloveu521)
+
 ## v1.2.0
 
 - Linux 平台迁移完成：Mineradio 现支持 Linux (X11)，提供 AppImage 和 deb 包
