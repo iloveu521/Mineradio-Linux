@@ -1,5 +1,12 @@
 # Changelog
 
+## v1.3.0-alpha1
+
+- Phase 1a: X11 全兼容优化
+- 新增 `detectDisplayServer()` 函数，区分 X11/Wayland 环境
+- `windowState` 增加 `displayServer` 字段供前端调优
+- X11 下禁用 GPU vsync，避免与 compositor 双重帧同步导致卡顿
+
 ## v1.2.1
 
 - 简化为 Linux 专用配置：移除 Windows 构建目标 (win/nsis/rcedit/toolsets)

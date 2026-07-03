@@ -12,7 +12,7 @@
 
 | Phase | 名称 | 状态 | 涉及文件 |
 |-------|------|------|----------|
-| Phase 1a | X11 全兼容优化 | ⬜ 待开始 | `desktop/main.js` |
+| Phase 1a | X11 全兼容优化 | ✅ 已完成 | `desktop/main.js` |
 | Phase 1b | Wayland 全兼容优化 | ⬜ 待开始 | `desktop/main.js` |
 | Phase 2 | 左侧歌单交互优化 | ⬜ 待开始 | `public/index.html` |
 | Phase 3 | 桌面歌词显示逻辑优化 | ⬜ 待开始 | `desktop/main.js` |

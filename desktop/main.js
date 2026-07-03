@@ -40,6 +40,14 @@ function getAppIcon() {
   }
   return APP_ICON_PNG;
 }
+
+function detectDisplayServer() {
+  if (process.env.WAYLAND_DISPLAY) return 'wayland';
+  if ((process.env.XDG_SESSION_TYPE || '').toLowerCase() === 'wayland') return 'wayland';
+  return 'x11';
+}
+const DISPLAY_SERVER = detectDisplayServer();
+
 const NETEASE_LOGIN_PARTITION = 'persist:mineradio-netease-login';
 const NETEASE_LOGIN_URL = 'https://music.163.com/#/login';
 const QQ_LOGIN_PARTITION = 'persist:mineradio-qqmusic-login';
@@ -60,6 +68,11 @@ const CHROMIUM_PERFORMANCE_SWITCHES = [
 // ANGLE D3D11 is Windows-only; Linux uses the default GL/Vulkan backend
 if (process.platform === 'win32') {
   CHROMIUM_PERFORMANCE_SWITCHES.push(['use-angle', 'd3d11']);
+}
+// Disable GPU vsync on Linux X11: compositor already handles frame pacing,
+// and double-vsync can cause stuttering with requestAnimationFrame
+if (process.platform === 'linux' && DISPLAY_SERVER === 'x11') {
+  CHROMIUM_PERFORMANCE_SWITCHES.push(['disable-gpu-vsync']);
 }
 for (const [name, value] of CHROMIUM_PERFORMANCE_SWITCHES) {
   if (value == null) app.commandLine.appendSwitch(name);
@@ -252,6 +265,7 @@ function getWindowState(win) {
     hasDisplayOnLeft: false,
     hasDisplayOnRight: false,
     displayBounds: null,
+    displayServer: DISPLAY_SERVER,
   };
   return {
     isMaximized: win.isMaximized(),
@@ -262,6 +276,7 @@ function getWindowState(win) {
     isMinimized: win.isMinimized(),
     isVisible: win.isVisible(),
     isFocused: win.isFocused(),
+    displayServer: DISPLAY_SERVER,
     ...getDisplayState(win),
   };
 }
