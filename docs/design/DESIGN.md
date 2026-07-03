@@ -6,26 +6,67 @@
 
 ## Overview
 
-v1.3.0 的目标是修复 Linux 桌面环境下的 6 个用户体验问题。每个 Phase 独立可交付，按优先级排列。
+v1.3.0 的目标是修复 Linux 桌面环境下的 7 个用户体验问题。每个 Phase 独立可交付，按优先级排列。
 
 ---
 
-## Phase 1 — UI Linux 桌面环境兼容优化
+## Phase 1a — X11 全兼容优化
 
 ### Why
 
-- 用户反馈使用过程中偶尔卡顿。Linux 下 Electron 的 `requestAnimationFrame` 与 X11 compositor vsync 可能存在不协调，导致帧率不稳定。
-- Wayland 用户不知情下可能遇到透明窗口和全局快捷键受限问题。
-- 当前代码无任何 `XDG_SESSION_TYPE` 检测，无法针对不同 display server 调优。
+- 用户反馈 X11 下偶尔卡顿。`requestAnimationFrame` 与 X11 compositor vsync 可能不协调。
+- X11 是 Linux 下最主流的 display server，应作为推荐配置稳定运行。
+- 当前无 X11 专项性能调优。
 
 ### How
 
 **文件**: `desktop/main.js`
 
-1. 新增 `detectDisplayServer()` 函数，读取 `XDG_SESSION_TYPE` / `WAYLAND_DISPLAY` 环境变量
-2. 在 `app.whenReady()` 中检测，Wayland 下首次启动弹出 `dialog.showMessageBox` 兼容性提示
-3. 记录标记避免重复弹窗
-4. `sendWindowState()` 增加 `displayServer` 字段，供前端按需调整渲染策略
+1. X11 环境检测：`detectDisplayServer()` 返回 `'x11'` 时，前端可针对 X11 做渲染优化
+2. 检查 `CHROMIUM_PERFORMANCE_SWITCHES`：
+   - 考虑添加 `--disable-gpu-vsync`（测试后决定）
+   - 保留 `ignore-gpu-blocklist`、`enable-zero-copy` 等跨平台优化
+3. 检查 `getRenderLoadTier()` 像素预算是否适合 Linux X11
+4. `sendWindowState()` 增加 `displayServer: 'x11'` 字段
+5. 在 X11 上测试帧率稳定性，记录基准数据
+
+### Verification
+- X11 下 `npm start` 启动无崩溃
+- 播放歌曲时帧率稳定（60fps 目标）
+- `windowState.displayServer === 'x11'`
+
+---
+
+## Phase 1b — Wayland 全兼容优化
+
+### Why
+
+- Wayland 下透明窗口和全局快捷键不完全支持。
+- 用户不知情下可能遇到渲染异常或快捷键失效。
+- 需要检测 + 提示，让用户做知情选择。
+
+### How
+
+**文件**: `desktop/main.js`
+
+1. 新增 `detectDisplayServer()` 函数：
+```js
+function detectDisplayServer() {
+  if (process.env.WAYLAND_DISPLAY) return 'wayland';
+  if ((process.env.XDG_SESSION_TYPE || '').toLowerCase() === 'wayland') return 'wayland';
+  return 'x11';
+}
+```
+2. 在 `app.whenReady()` 中检测，Wayland 下弹窗：
+   > "检测到 Wayland 环境。Mineradio Linux 在 Wayland 下部分功能受限（透明窗口渲染可能异常、全局快捷键不可用）。建议使用 `--ozone-platform=x11` 启动以获得最佳体验。继续使用 Wayland？"
+   - 首次弹窗，用户确认后记录标记不再提示
+3. Wayland 下 `sendWindowState()` 返回 `displayServer: 'wayland'`，前端据此调整行为（如避免依赖透明效果）
+
+### Verification
+- Wayland 下启动 → 弹出兼容提示
+- 确认后不再弹窗
+- X11 下不弹窗
+- `windowState.displayServer === 'wayland'`
 
 ---
 
@@ -128,7 +169,8 @@ v1.3.0 的目标是修复 Linux 桌面环境下的 6 个用户体验问题。每
 
 | Phase | 验证 |
 |-------|------|
-| 1 | Wayland → 弹兼容提示；X11 → 不弹；`windowState` 含 `displayServer` |
+| 1a | X11 下帧率稳定 60fps；`windowState.displayServer === 'x11'` |
+| 1b | Wayland → 弹兼容提示；X11 → 不弹；`windowState.displayServer === 'wayland'` |
 | 2 | 鼠标移入歌单 ~200ms 滑出；移走 ~150ms 消失 |
 | 3 | 播放 → 打开主窗口 → 歌词消失 → 最小化 → 歌词出现 |
 | 4 | 悬停音量图标滚轮 → 音量 ±5% → 滑块同步 |

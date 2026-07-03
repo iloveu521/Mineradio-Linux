@@ -12,7 +12,8 @@
 
 | Phase | 名称 | 状态 | 涉及文件 |
 |-------|------|------|----------|
-| Phase 1 | UI Linux 桌面环境兼容优化 | ⬜ 待开始 | `desktop/main.js` |
+| Phase 1a | X11 全兼容优化 | ⬜ 待开始 | `desktop/main.js` |
+| Phase 1b | Wayland 全兼容优化 | ⬜ 待开始 | `desktop/main.js` |
 | Phase 2 | 左侧歌单交互优化 | ⬜ 待开始 | `public/index.html` |
 | Phase 3 | 桌面歌词显示逻辑优化 | ⬜ 待开始 | `desktop/main.js` |
 | Phase 4 | 音量按钮滚轮调节 | ⬜ 待开始 | `public/index.html` |
@@ -21,22 +22,41 @@
 
 ---
 
-## Phase 1 — UI Linux 桌面环境兼容优化
+## Phase 1a — X11 全兼容优化
 
-**目标**: 改善 X11 下偶发卡顿，Wayland 下给出兼容性提示
+**目标**: 消除 X11 下偶发卡顿，确保 X11 环境作为推荐配置稳定运行
 
 **问题描述**:
-- 使用过程中偶尔出现卡顿，疑似 X11 compositor vsync 交互问题
-- Wayland 用户不知情下体验可能不佳（透明窗口、全局快捷键受限）
-- 当前无任何桌面环境检测逻辑
+- 使用过程中偶尔出现卡顿，疑似 `requestAnimationFrame` 与 X11 compositor vsync 交互问题
+- 窗口透明度、无框窗口等在 X11 上可正常工作，但渲染帧率可能不稳定
+- 当前无 X11 专项优化
 
 **方向**:
-- 读取 `XDG_SESSION_TYPE` 环境变量区分 X11/Wayland
-- Wayland 下首次启动弹窗提示，建议 `--ozone-platform=x11`
-- 检查 `requestAnimationFrame` 节流逻辑与 Linux compositor 的兼容性
-- 适当调整 Linux 下的渲染像素比预算
+- 检查 `CHROMIUM_PERFORMANCE_SWITCHES` 是否需要针对 Linux X11 添加 `--disable-gpu-vsync` 或其他 flag
+- 检查 `requestAnimationFrame` 节流逻辑（`getRenderLoadTier()`）与 X11 compositor 的兼容性
+- 适当调整 Linux X11 下的渲染像素比预算
+- `sendWindowState()` 增加 `displayServer` 字段供前端调整
 
-**详细设计**: [`docs/design/DESIGN.md`](../design/DESIGN.md#phase-1---ui-linux-桌面环境兼容优化)
+**详细设计**: [`docs/design/DESIGN.md`](../design/DESIGN.md#phase-1a---x11-全兼容优化)
+
+---
+
+## Phase 1b — Wayland 全兼容优化
+
+**目标**: 在 Wayland 下实现可用的基本体验，给出兼容性提示
+
+**问题描述**:
+- Wayland 下 `transparent: true` 透明窗口渲染可能异常
+- `globalShortcut` 在 Wayland 下不可用
+- 用户不知情下可能遇到各种限制
+
+**方向**:
+- 读取 `XDG_SESSION_TYPE` / `WAYLAND_DISPLAY` 检测 Wayland
+- Wayland 下首次启动弹窗提示兼容性限制
+- 提供 `--ozone-platform=x11` 启动建议
+- 记录标记避免重复弹窗
+
+**详细设计**: [`docs/design/DESIGN.md`](../design/DESIGN.md#phase-1b---wayland-全兼容优化)
 
 ---
 
