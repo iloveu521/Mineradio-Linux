@@ -1,11 +1,17 @@
 # Changelog
 
+## v1.3.0-alpha3
+
+- Phase 1b: Wayland 兼容优化
+- Wayland 下首次启动弹出兼容性提示弹窗
+- 提示后记录 `.wayland-warning-shown` 标记，不再重复弹出
+- 移除厂商专用 GPU flags（需要硬件测试后重新引入）
+
 ## v1.3.0-alpha2
 
 - Phase 1a-2: GPU 检测与分级优化
 - 新增 `detectLinuxGpu()` 通过 lspci 识别 GPU 型号
 - GPU 三级分档：high 120fps / medium 90fps / low 60fps
-- 厂商专用 GPU 后端：AMD→Vulkan、NVIDIA→GL-EGL、Intel→默认
 - `windowState` 新增 `gpuVendor`/`gpuTier`/`maxFps` 字段
 - 前端 `getMaxFpsFromState()`：DIY 优先，否则自动使用 GPU 默认帧率
 - `fx.maxFps` 持久化到 localStorage，支持用户自定义帧率

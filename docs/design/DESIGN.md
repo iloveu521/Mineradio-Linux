@@ -133,11 +133,10 @@ maxFps: GPU_DEFAULT_FPS,
 
 ### Verification
 
-- [ ] `lspci` 检测到 GPU → `windowState.gpuVendor` 非 `unknown`
-- [ ] GPU tier 分级正确 → 对应 `windowState.maxFps`
-- [ ] AMD 上启用 Vulkan backend；NVIDIA 上启用 GL-EGL backend
-- [ ] 前端帧率受 `maxFps` 限制
-- [ ] 视觉控制台滑块可调节帧率（30-120），持久化到 `localStorage`
+- [x] `lspci` 检测到 GPU → `windowState.gpuVendor` 非 `unknown`
+- [x] GPU tier 分级正确 → 对应 `windowState.maxFps`
+- [x] 前端帧率受 `fx.maxFps` 限制
+- [ ] 厂商专用 Chromium flags（需硬件测试后重新引入）
 
 ---
 
@@ -167,10 +166,12 @@ function detectDisplayServer() {
 3. Wayland 下 `sendWindowState()` 返回 `displayServer: 'wayland'`，前端据此调整行为（如避免依赖透明效果）
 
 ### Verification
-- Wayland 下启动 → 弹出兼容提示
-- 确认后不再弹窗
-- X11 下不弹窗
-- `windowState.displayServer === 'wayland'`
+- [x] Wayland 下启动 → 弹出兼容提示
+- [x] 确认后不再弹窗（`.wayland-warning-shown` 标记）
+- [x] X11 下不弹窗
+- [x] `windowState.displayServer === 'wayland'`
+
+> 厂商专用 GPU flags（NVIDIA→EGL, AMD→Vulkan）已移除，需在不同硬件上测试后重新引入。
 
 ---
 

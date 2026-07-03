@@ -116,19 +116,8 @@ if (process.platform === 'win32') {
 if (process.platform === 'linux' && DISPLAY_SERVER === 'x11') {
   CHROMIUM_PERFORMANCE_SWITCHES.push(['disable-gpu-vsync']);
 }
-// Vendor-specific GPU backend selection for Linux
-if (process.platform === 'linux') {
-  if (GPU_VENDOR === 'amd') {
-    // AMD Mesa radv: Vulkan driver is most mature, lower draw-call overhead
-    CHROMIUM_PERFORMANCE_SWITCHES.push(['use-angle', 'vulkan']);
-    CHROMIUM_PERFORMANCE_SWITCHES.push(['enable-features', 'Vulkan']);
-  } else if (GPU_VENDOR === 'nvidia') {
-    // NVIDIA proprietary: EGL context switching is faster than GLX
-    CHROMIUM_PERFORMANCE_SWITCHES.push(['use-gl', 'angle']);
-    CHROMIUM_PERFORMANCE_SWITCHES.push(['use-angle', 'gl-egl']);
-  }
-  // Intel: default GL backend is most compatible, no extra flags needed
-}
+// Vendor-specific GPU backend flags are deferred to a future phase
+// (require per-system testing: EGL/Vulkan availability varies by driver version)
 for (const [name, value] of CHROMIUM_PERFORMANCE_SWITCHES) {
   if (value == null) app.commandLine.appendSwitch(name);
   else app.commandLine.appendSwitch(name, value);
@@ -1526,6 +1515,28 @@ if (!gotSingleInstanceLock) {
   });
 
   app.whenReady().then(async () => {
+    // Wayland compatibility warning (Linux only, first launch)
+    if (process.platform === 'linux' && DISPLAY_SERVER === 'wayland') {
+      var waylandFlagFile = path.join(app.getPath('userData'), '.wayland-warning-shown');
+      var waylandWarningShown = false;
+      try { waylandWarningShown = fs.existsSync(waylandFlagFile); } catch (_) {}
+      if (!waylandWarningShown) {
+        dialog.showMessageBox({
+          type: 'warning',
+          title: 'Wayland 兼容性提示',
+          message: '检测到 Wayland 环境',
+          detail: 'Mineradio Linux 在 Wayland 下部分功能受限（透明窗口渲染可能异常、全局快捷键不可用）。\n\n建议使用 --ozone-platform=x11 启动以获得最佳体验。',
+          buttons: ['继续使用 Wayland', '了解详情'],
+          defaultId: 0,
+        }).then(function(result) {
+          if (result.response === 1) {
+            shell.openExternal('https://github.com/iloveu521/Mineradio-Linux#known-limitations-on-linux');
+          }
+        }).catch(function() {});
+        try { fs.writeFileSync(waylandFlagFile, Date.now().toString(), 'utf8'); } catch (_) {}
+      }
+    }
+
     screen.on('display-metrics-changed', () => {
       positionDesktopLyricsWindow();
       positionWallpaperWindow();
