@@ -169,7 +169,7 @@ function detectDisplayServer() {
 
 | Phase | 验证 |
 |-------|------|
-| 1a | X11 下帧率稳定 60fps；`windowState.displayServer === 'x11'` |
+| 1a | ✅ X11 下帧率稳定 60fps；`windowState.displayServer === 'x11'` |
 | 1b | Wayland → 弹兼容提示；X11 → 不弹；`windowState.displayServer === 'wayland'` |
 | 2 | 鼠标移入歌单 ~200ms 滑出；移走 ~150ms 消失 |
 | 3 | 播放 → 打开主窗口 → 歌词消失 → 最小化 → 歌词出现 |
