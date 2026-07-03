@@ -3263,6 +3263,7 @@ var fxDefaults = {
   shelfAccentColor: '#ffffff',
   performanceBackground: 'auto',
   performanceQuality: 'high',
+  maxFps: 0,    // 0=auto (GPU tier default); >0=user override (30-120)
   liveBackgroundKeep: false,
   cam: 'off',
 };
@@ -26579,8 +26580,25 @@ var splashWarmRenderLast = 0;
 function isMainSceneCoveredBySplash() {
   return document.body.classList.contains('splash-active') && !document.body.classList.contains('splash-revealing');
 }
+function getMaxFpsFromState() {
+  // User DIY override (0 = auto, use GPU tier default from backend)
+  if (fx && fx.maxFps && Number(fx.maxFps) > 0) return Number(fx.maxFps);
+  // GPU tier default from Electron main process (windowState.maxFps)
+  if (typeof desktopWindowState !== 'undefined' && desktopWindowState && desktopWindowState.maxFps && desktopWindowState.maxFps > 0) {
+    return desktopWindowState.maxFps;
+  }
+  return 0; // vsync
+}
 function getAdaptiveRenderFps() {
   if (isDeepBackgroundMode()) return 1;
+  var maxFps = getMaxFpsFromState();
+  if (maxFps > 0) {
+    var tier = (typeof getRenderLoadTier === 'function') ? getRenderLoadTier() : 0;
+    // Scale down for high-pixel-load viewports
+    if (tier >= 2) return Math.max(30, Math.round(maxFps * 0.4));
+    if (tier >= 1) return Math.max(30, Math.round(maxFps * 0.6));
+    return maxFps;
+  }
   if (RENDER_VISIBLE_VSYNC) return 0;
   var tier = (typeof getRenderLoadTier === 'function') ? getRenderLoadTier() : 0;
   if (typeof isRenderInteractionActive === 'function' && isRenderInteractionActive()) {

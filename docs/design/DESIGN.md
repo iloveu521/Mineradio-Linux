@@ -31,9 +31,113 @@ v1.3.0 的目标是修复 Linux 桌面环境下的 7 个用户体验问题。每
 5. 在 X11 上测试帧率稳定性，记录基准数据
 
 ### Verification
-- X11 下 `npm start` 启动无崩溃
-- 播放歌曲时帧率稳定（60fps 目标）
-- `windowState.displayServer === 'x11'`
+- [x] X11 下 `npm start` 启动无崩溃
+- [x] 播放歌曲时帧率稳定
+- [x] `windowState.displayServer === 'x11'`
+
+---
+
+## Phase 1a-2 — GPU 检测与分级优化
+
+### Why
+
+- 不同显卡性能差异巨大。NVIDIA RTX 3060 可稳定 120fps，Intel HD 核显 30fps 就吃力。
+- Chromium 的 ANGLE 后端（GL/Vulkan/EGL）在不同厂商的 Linux 驱动上表现不同：NVIDIA 闭源驱动走 EGL 最稳，AMD Mesa radv 走 Vulkan 最佳，Intel 走默认 GL 最可靠。
+- 用户无法知道自己的显卡应该跑多少帧，也没有简单的方式调节帧率上限。
+- 当前代码无 GPU 检测逻辑，对所有 Linux 用户一视同仁。
+
+### GPU 分级
+
+| Tier | 默认帧率 | 典型 GPU |
+|------|---------|---------|
+| `high` | 120 fps | NVIDIA RTX 3060+, AMD RX 6600+, Intel Arc |
+| `medium` | 90 fps | NVIDIA GTX 10/16/RTX 2050, AMD RX 5xx, Intel Xe/Iris |
+| `low` | 60 fps | Intel UHD/HD 核显, 老旧独显 |
+| `min` | 30 fps | 用户手动降级，不自动分配 |
+
+### How
+
+**文件**: `desktop/main.js` + `public/index.html`
+
+**Step 1 — GPU 检测** (`desktop/main.js`):
+```js
+const { execSync } = require('child_process');
+
+function detectLinuxGpu() {
+  try {
+    const raw = execSync("lspci -mm -d ::0300", { encoding: 'utf8', timeout: 2000 }).trim();
+    const line = raw.split('\n')[0] || '';
+    const lower = line.toLowerCase();
+    const vendor = lower.includes('nvidia') ? 'nvidia'
+      : lower.includes('amd') || lower.includes('ati') || lower.includes('radeon') ? 'amd'
+      : lower.includes('intel') ? 'intel'
+      : 'unknown';
+    return { vendor, raw: line };
+  } catch (_) {
+    return { vendor: 'unknown', raw: '' };
+  }
+}
+
+function detectGpuTier(vendor, raw) {
+  const lower = raw.toLowerCase();
+  if (vendor === 'nvidia') {
+    if (/rtx [3-9]\d\d\d/i.test(lower) || /rtx [4-9]\d\d\d/i.test(lower) || /rtx 2[5-9]\d\d/i.test(lower)) return 'high';
+    if (/rtx 20\d\d/i.test(lower) || /rtx 2050/i.test(lower)) return 'medium';
+    if (/gtx 1[0-6]\d\d/i.test(lower) || /gtx 9\d\d/i.test(lower)) return 'medium';
+    return 'low';
+  }
+  if (vendor === 'amd') {
+    if (/rx [67]\d\d\d/i.test(lower) || /radeon rx [67]\d\d\d/i.test(lower)) return 'high';
+    if (/rx [45]\d\d/i.test(lower) || /radeon rx [45]\d\d/i.test(lower)) return 'medium';
+    return 'low';
+  }
+  if (vendor === 'intel') {
+    if (/arc/i.test(lower)) return 'high';
+    if (/xe/i.test(lower) || /iris/i.test(lower)) return 'medium';
+    return 'low';
+  }
+  return 'low';
+}
+
+// 默认帧率表
+const GPU_TIER_FPS = { high: 120, medium: 90, low: 60, min: 30 };
+```
+
+**Step 2 — Chromium 厂商 flags** (`desktop/main.js`):
+```js
+// 根据 GPU 厂商添加专用优化 flags
+if (process.platform === 'linux') {
+  if (gpuVendor === 'amd') {
+    CHROMIUM_PERFORMANCE_SWITCHES.push(['use-angle', 'vulkan']);
+    app.commandLine.appendSwitch('enable-features', 'Vulkan');
+  } else if (gpuVendor === 'nvidia') {
+    CHROMIUM_PERFORMANCE_SWITCHES.push(['use-gl', 'angle']);
+    CHROMIUM_PERFORMANCE_SWITCHES.push(['use-angle', 'gl-egl']);
+  }
+  // Intel: 默认后端已是最佳，不加额外 flag
+}
+```
+
+**Step 3 — windowState 携带 GPU 信息** (`desktop/main.js`):
+```js
+// getWindowState() 返回增加:
+gpuVendor: GPU_VENDOR,
+gpuTier: GPU_TIER,
+maxFps: GPU_DEFAULT_FPS,
+```
+
+**Step 4 — 前端帧率 DIY** (`public/index.html`):
+- 读取 `fx.maxFps`（用户自定义值）或 `windowState.maxFps`（默认值）
+- 在限帧循环中应用
+- 视觉控制台添加 `maxFps` 滑块（范围 30-120，步长 10）
+
+### Verification
+
+- [ ] `lspci` 检测到 GPU → `windowState.gpuVendor` 非 `unknown`
+- [ ] GPU tier 分级正确 → 对应 `windowState.maxFps`
+- [ ] AMD 上启用 Vulkan backend；NVIDIA 上启用 GL-EGL backend
+- [ ] 前端帧率受 `maxFps` 限制
+- [ ] 视觉控制台滑块可调节帧率（30-120），持久化到 `localStorage`
 
 ---
 

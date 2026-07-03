@@ -2,7 +2,7 @@ const { app, BrowserWindow, ipcMain, shell, screen, session, globalShortcut, dia
 const net = require('net');
 const path = require('path');
 const fs = require('fs');
-const { execFile, spawn } = require('child_process');
+const { execFile, spawn, execSync } = require('child_process');
 
 let mainWindow = null;
 let localServer = null;
@@ -48,6 +48,48 @@ function detectDisplayServer() {
 }
 const DISPLAY_SERVER = detectDisplayServer();
 
+function detectLinuxGpu() {
+  try {
+    const raw = execSync("lspci -mm -d ::0300", { encoding: 'utf8', timeout: 2000 }).trim();
+    const line = raw.split('\n')[0] || '';
+    const lower = line.toLowerCase();
+    const vendor = lower.includes('nvidia') ? 'nvidia'
+      : (lower.includes('amd') || lower.includes('ati') || lower.includes('radeon') ? 'amd'
+      : lower.includes('intel') ? 'intel'
+      : 'unknown');
+    return { vendor, raw: line };
+  } catch (_) {
+    return { vendor: 'unknown', raw: '' };
+  }
+}
+
+function gpuTierFrom(vendor, raw) {
+  const lower = raw.toLowerCase();
+  if (vendor === 'nvidia') {
+    if (/rtx [3-9]\d\d\d/i.test(lower) || /rtx [4-9]\d\d\d/i.test(lower) || /rtx 2[5-9]\d\d/i.test(lower)) return 'high';
+    if (/rtx 20\d\d/i.test(lower) || /rtx 2050/i.test(lower)) return 'medium';
+    if (/gtx 1[0-6]\d\d/i.test(lower) || /gtx 9\d\d/i.test(lower) || /t\d\d\d/i.test(lower)) return 'medium';
+    return 'low';
+  }
+  if (vendor === 'amd') {
+    if (/rx [67]\d\d\d/i.test(lower) || /radeon rx [67]\d\d\d/i.test(lower)) return 'high';
+    if (/rx [45]\d\d/i.test(lower) || /radeon rx [45]\d\d/i.test(lower)) return 'medium';
+    return 'low';
+  }
+  if (vendor === 'intel') {
+    if (/arc/i.test(lower)) return 'high';
+    if (/xe/i.test(lower) || /iris/i.test(lower)) return 'medium';
+    return 'low';
+  }
+  return 'low';
+}
+
+const GPU_TIER_FPS = { high: 120, medium: 90, low: 60, min: 30 };
+const LINUX_GPU = process.platform === 'linux' ? detectLinuxGpu() : { vendor: 'unknown', raw: '' };
+const GPU_VENDOR = LINUX_GPU.vendor;
+const GPU_TIER = process.platform === 'linux' ? gpuTierFrom(GPU_VENDOR, LINUX_GPU.raw) : 'unknown';
+const GPU_DEFAULT_FPS = GPU_TIER_FPS[GPU_TIER] || 60;
+
 const NETEASE_LOGIN_PARTITION = 'persist:mineradio-netease-login';
 const NETEASE_LOGIN_URL = 'https://music.163.com/#/login';
 const QQ_LOGIN_PARTITION = 'persist:mineradio-qqmusic-login';
@@ -73,6 +115,19 @@ if (process.platform === 'win32') {
 // and double-vsync can cause stuttering with requestAnimationFrame
 if (process.platform === 'linux' && DISPLAY_SERVER === 'x11') {
   CHROMIUM_PERFORMANCE_SWITCHES.push(['disable-gpu-vsync']);
+}
+// Vendor-specific GPU backend selection for Linux
+if (process.platform === 'linux') {
+  if (GPU_VENDOR === 'amd') {
+    // AMD Mesa radv: Vulkan driver is most mature, lower draw-call overhead
+    CHROMIUM_PERFORMANCE_SWITCHES.push(['use-angle', 'vulkan']);
+    CHROMIUM_PERFORMANCE_SWITCHES.push(['enable-features', 'Vulkan']);
+  } else if (GPU_VENDOR === 'nvidia') {
+    // NVIDIA proprietary: EGL context switching is faster than GLX
+    CHROMIUM_PERFORMANCE_SWITCHES.push(['use-gl', 'angle']);
+    CHROMIUM_PERFORMANCE_SWITCHES.push(['use-angle', 'gl-egl']);
+  }
+  // Intel: default GL backend is most compatible, no extra flags needed
 }
 for (const [name, value] of CHROMIUM_PERFORMANCE_SWITCHES) {
   if (value == null) app.commandLine.appendSwitch(name);
@@ -266,6 +321,9 @@ function getWindowState(win) {
     hasDisplayOnRight: false,
     displayBounds: null,
     displayServer: DISPLAY_SERVER,
+    gpuVendor: GPU_VENDOR,
+    gpuTier: GPU_TIER,
+    maxFps: GPU_DEFAULT_FPS,
   };
   return {
     isMaximized: win.isMaximized(),
@@ -277,6 +335,9 @@ function getWindowState(win) {
     isVisible: win.isVisible(),
     isFocused: win.isFocused(),
     displayServer: DISPLAY_SERVER,
+    gpuVendor: GPU_VENDOR,
+    gpuTier: GPU_TIER,
+    maxFps: GPU_DEFAULT_FPS,
     ...getDisplayState(win),
   };
 }
